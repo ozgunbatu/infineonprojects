@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitive Landscape | Infineon PMIC Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --infineon-red: #E30045;
+            --electric-cyan: #00D9FF;
+            --deep-navy: #0A0E27;
+            --bg-dark: #0F1419;
+            --text-primary: #E8EAF6;
+            --card-bg: #1A1F2E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            color: var(--infineon-red);
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-header p {
+            font-size: 1.2rem;
+            color: var(--electric-cyan);
+        }
+        
+        .chart-container {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 217, 255, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.5rem;
+            color: var(--infineon-red);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        canvas {
+            max-height: 450px;
+        }
+        
+        .insight-box {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(227, 0, 69, 0.1) 100%);
+            border-left: 4px solid var(--electric-cyan);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 8px;
+        }
+        
+        .insight-box h3 {
+            color: var(--electric-cyan);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .insight-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .insight-box li {
+            padding-left: 1.5rem;
+            margin-bottom: 0.7rem;
+            position: relative;
+            line-height: 1.6;
+        }
+        
+        .insight-box li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
+            color: var(--infineon-red);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1>🎯 Competitive Landscape</h1>
+        <p>Automotive PMIC Market Positioning Analysis</p>
+    </div>
+    
+    <!-- Chart 1: Market Share -->
+    <div class="chart-container">
+        <div class="chart-title">Market Share Distribution (2024)</div>
+        <canvas id="marketShareChart"></canvas>
+    </div>
+    
+    <!-- Charts 2 & 3: Two Column -->
+    <div class="grid-2col">
+        <div class="chart-container">
+            <div class="chart-title">Feature Comparison Matrix</div>
+            <canvas id="featureRadarChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">Price vs. Integration Level</div>
+            <canvas id="priceBubbleChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Chart 4: Competitive Positioning -->
+    <div class="chart-container">
+        <div class="chart-title">Vendor Capabilities Benchmark</div>
+        <canvas id="capabilitiesChart"></canvas>
+    </div>
+    
+    <!-- Strategic Insights -->
+    <div class="insight-box">
+        <h3>💡 Strategic Positioning Insights</h3>
+        <ul>
+            <li><strong>TI (24% share):</strong> Cost leadership strategy, broad portfolio, but limited ASIL-D offerings create opportunity</li>
+            <li><strong>Analog Devices (19% share):</strong> Premium positioning with luxury OEMs, higher pricing creates value gap</li>
+            <li><strong>Infineon Gap:</strong> Missing integrated CAN FD + 6-rail PMIC for ADAS L2+ segment</li>
+            <li><strong>NXP Threat:</strong> Already has CAN FD integration but limited to 5 rails - narrow window to differentiate</li>
+            <li><strong>Recommended Strategy:</strong> Premium integration at competitive price (€4.50 vs. €5.35 discrete)</li>
+        </ul>
+    </div>
+    
+    <script>
+        Chart.defaults.color = '#E8EAF6';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        
+        const vendorColors = {
+            infineon: 'rgba(227, 0, 69, 0.8)',
+            ti: 'rgba(255, 165, 0, 0.8)',
+            analog: 'rgba(138, 43, 226, 0.8)',
+            nxp: 'rgba(0, 217, 255, 0.8)',
+            st: 'rgba(0, 255, 136, 0.8)',
+            renesas: 'rgba(255, 105, 180, 0.8)',
+            others: 'rgba(128, 128, 128, 0.6)'
+        };
+        
+        // Chart 1: Market Share Pie
+        const ctx1 = document.getElementById('marketShareChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['Texas Instruments', 'Analog Devices', 'Infineon', 'NXP', 'STMicro', 'Renesas', 'Others'],
+                datasets: [{
+                    data: [24, 19, 15, 12, 8, 11, 11],
+                    backgroundColor: [
+                        vendorColors.ti,
+                        vendorColors.analog,
+                        vendorColors.infineon,
+                        vendorColors.nxp,
+                        vendorColors.st,
+                        vendorColors.renesas,
+                        vendorColors.others
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#0F1419'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            padding: 15,
+                            font: { size: 13 },
+                            generateLabels: function(chart) {
+                                const data = chart.data;
+                                return data.labels.map((label, i) => ({
+                                    text: label + ' (' + data.datasets[0].data[i] + '%)',
+                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                    hidden: false,
+                                    index: i
+                                }));
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '% market share';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 2: Radar Chart - Feature Comparison
+        const ctx2 = document.getElementById('featureRadarChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'radar',
+            data: {
+                labels: ['Voltage Rails', 'Integration', 'Safety (ASIL)', 'Package Size', 'Price Competitiveness'],
+                datasets: [
+                    {
+                        label: 'Infineon TLF37x (Proposed)',
+                        data: [6, 10, 10, 9, 8],
+                        backgroundColor: 'rgba(227, 0, 69, 0.2)',
+                        borderColor: vendorColors.infineon,
+                        borderWidth: 3,
+                        pointBackgroundColor: vendorColors.infineon,
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'TI TPS65xxx',
+                        data: [5, 4, 6, 7, 10],
+                        backgroundColor: 'rgba(255, 165, 0, 0.2)',
+                        borderColor: vendorColors.ti,
+                        borderWidth: 2,
+                        pointBackgroundColor: vendorColors.ti,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'Analog ADM1xxx',
+                        data: [4, 4, 10, 5, 4],
+                        backgroundColor: 'rgba(138, 43, 226, 0.2)',
+                        borderColor: vendorColors.analog,
+                        borderWidth: 2,
+                        pointBackgroundColor: vendorColors.analog,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'NXP FS65xxx',
+                        data: [5, 8, 8, 7, 7],
+                        backgroundColor: 'rgba(0, 217, 255, 0.2)',
+                        borderColor: vendorColors.nxp,
+                        borderWidth: 2,
+                        pointBackgroundColor: vendorColors.nxp,
+                        pointRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 10,
+                        ticks: {
+                            stepSize: 2,
+                            backdropColor: 'transparent'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        angleLines: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 12,
+                            font: { size: 10 }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 3: Bubble Chart - Price vs Integration
+        const ctx3 = document.getElementById('priceBubbleChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'bubble',
+            data: {
+                datasets: [
+                    {
+                        label: 'Infineon TLF37x',
+                        data: [{x: 9, y: 4.50, r: 15}],
+                        backgroundColor: vendorColors.infineon,
+                        borderColor: vendorColors.infineon
+                    },
+                    {
+                        label: 'TI TPS65xxx',
+                        data: [{x: 4, y: 4.19, r: 24}],
+                        backgroundColor: vendorColors.ti,
+                        borderColor: vendorColors.ti
+                    },
+                    {
+                        label: 'Analog ADM1xxx',
+                        data: [{x: 4, y: 5.10, r: 19}],
+                        backgroundColor: vendorColors.analog,
+                        borderColor: vendorColors.analog
+                    },
+                    {
+                        label: 'NXP FS65xxx',
+                        data: [{x: 7, y: 4.41, r: 12}],
+                        backgroundColor: vendorColors.nxp,
+                        borderColor: vendorColors.nxp
+                    },
+                    {
+                        label: 'STMicro L99xxx',
+                        data: [{x: 3, y: 3.60, r: 8}],
+                        backgroundColor: vendorColors.st,
+                        borderColor: vendorColors.st
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 12, font: { size: 11 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + 
+                                       ' | Integration: ' + context.parsed.x + '/10' +
+                                       ' | Price: €' + context.parsed.y.toFixed(2) +
+                                       ' | Market Share: ' + context.raw.r + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Integration Level (1-10)',
+                            font: { weight: 'bold' }
+                        },
+                        min: 0,
+                        max: 10
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Net Price (€)',
+                            font: { weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '€' + value.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 4: Horizontal Bar - Capabilities Benchmark
+        const ctx4 = document.getElementById('capabilitiesChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: ['Infineon TLF37x (Proposed)', 'TI TPS65xxx', 'Analog ADM1xxx', 'NXP FS65xxx', 'STMicro L99xxx'],
+                datasets: [
+                    {
+                        label: 'Technical Score',
+                        data: [88, 72, 78, 80, 65],
+                        backgroundColor: vendorColors.infineon,
+                        borderColor: vendorColors.infineon,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Price Competitiveness',
+                        data: [80, 95, 45, 75, 100],
+                        backgroundColor: vendorColors.ti,
+                        borderColor: vendorColors.ti,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Market Readiness',
+                        data: [60, 100, 95, 85, 90],
+                        backgroundColor: vendorColors.nxp,
+                        borderColor: vendorColors.nxp,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15 }
+                    }
+                },
+                scales: {
+                    x: {
+                        min: 0,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Score (0-100)',
+                            font: { weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
