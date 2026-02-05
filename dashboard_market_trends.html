@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Trends Dashboard | Infineon PMIC Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --infineon-red: #E30045;
+            --electric-cyan: #00D9FF;
+            --deep-navy: #0A0E27;
+            --bg-dark: #0F1419;
+            --text-primary: #E8EAF6;
+            --card-bg: #1A1F2E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            color: var(--infineon-red);
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-header p {
+            font-size: 1.2rem;
+            color: var(--electric-cyan);
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .kpi-card {
+            background: linear-gradient(135deg, var(--deep-navy) 0%, var(--card-bg) 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+        
+        .kpi-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--electric-cyan);
+            margin-bottom: 0.5rem;
+        }
+        
+        .kpi-label {
+            font-size: 1rem;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .chart-container {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 217, 255, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.5rem;
+            color: var(--infineon-red);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        canvas {
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1>📊 Market Trends Analysis</h1>
+        <p>Automotive PMIC Market Intelligence Dashboard</p>
+    </div>
+    
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-number">€7.8B</div>
+            <div class="kpi-label">Market Size 2030</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-number">10.8%</div>
+            <div class="kpi-label">CAGR 2024-2030</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-number">45%</div>
+            <div class="kpi-label">ADAS L2+ Penetration</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-number">€3.4B</div>
+            <div class="kpi-label">EMEA + China Market</div>
+        </div>
+    </div>
+    
+    <!-- Chart 1: Market Growth Over Time -->
+    <div class="chart-container">
+        <div class="chart-title">Market Size Growth by Segment (2024-2030)</div>
+        <canvas id="marketGrowthChart"></canvas>
+    </div>
+    
+    <!-- Chart 2 & 3: Two Column Layout -->
+    <div class="grid-2col">
+        <div class="chart-container">
+            <div class="chart-title">Market Segment Distribution</div>
+            <canvas id="segmentPieChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">ADAS L2+ Growth Trajectory</div>
+            <canvas id="adasGrowthChart"></canvas>
+        </div>
+    </div>
+    
+    <script>
+        // Chart.js default settings
+        Chart.defaults.color = '#E8EAF6';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        
+        // Color palette
+        const colors = {
+            basicECU: 'rgba(227, 0, 69, 0.8)',
+            adas: 'rgba(0, 217, 255, 0.8)',
+            powertrain: 'rgba(255, 165, 0, 0.8)',
+            infotainment: 'rgba(138, 43, 226, 0.8)',
+            other: 'rgba(128, 128, 128, 0.8)'
+        };
+        
+        // Data
+        const years = [2024, 2025, 2026, 2027, 2028, 2029, 2030];
+        
+        const marketData = {
+            basicECU: [1.47, 1.56, 1.65, 1.74, 1.82, 1.91, 2.00],
+            adas: [0.50, 0.63, 0.80, 1.02, 1.30, 1.64, 2.04],
+            powertrain: [1.05, 1.15, 1.26, 1.38, 1.52, 1.67, 1.84],
+            infotainment: [0.76, 0.81, 0.86, 0.91, 0.97, 1.03, 1.09],
+            other: [0.42, 0.44, 0.46, 0.48, 0.51, 0.53, 0.56]
+        };
+        
+        // Chart 1: Multi-line Chart (Market Growth)
+        const ctx1 = document.getElementById('marketGrowthChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: 'ADAS L2+',
+                        data: marketData.adas,
+                        borderColor: colors.adas,
+                        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Powertrain & Battery',
+                        data: marketData.powertrain,
+                        borderColor: colors.powertrain,
+                        backgroundColor: 'rgba(255, 165, 0, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Basic ECU',
+                        data: marketData.basicECU,
+                        borderColor: colors.basicECU,
+                        backgroundColor: 'rgba(227, 0, 69, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Infotainment',
+                        data: marketData.infotainment,
+                        borderColor: colors.infotainment,
+                        backgroundColor: 'rgba(138, 43, 226, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': €' + context.parsed.y.toFixed(2) + 'B';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Market Size (€ Billion)',
+                            color: '#E8EAF6',
+                            font: { size: 14, weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '€' + value.toFixed(1) + 'B';
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Year',
+                            color: '#E8EAF6',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 2: Pie Chart (Segment Distribution 2030)
+        const ctx2 = document.getElementById('segmentPieChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['ADAS L2+', 'Basic ECU', 'Powertrain & Battery', 'Infotainment', 'Other'],
+                datasets: [{
+                    data: [2.04, 2.00, 1.84, 1.09, 0.56],
+                    backgroundColor: [
+                        colors.adas,
+                        colors.basicECU,
+                        colors.powertrain,
+                        colors.infotainment,
+                        colors.other
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#0F1419'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 12,
+                            font: { size: 11 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return context.label + ': €' + context.parsed.toFixed(2) + 'B (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 3: ADAS Growth with Penetration Rate
+        const ctx3 = document.getElementById('adasGrowthChart').getContext('2d');
+        const adasPenetration = [12, 15, 19, 24, 30, 37, 45];
+        
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Market Size (€B)',
+                        data: marketData.adas,
+                        backgroundColor: colors.adas,
+                        borderColor: colors.adas,
+                        borderWidth: 2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        type: 'line',
+                        label: 'Penetration Rate (%)',
+                        data: adasPenetration,
+                        borderColor: colors.basicECU,
+                        backgroundColor: 'rgba(227, 0, 69, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        yAxisID: 'y1',
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 12,
+                            font: { size: 11 }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Market Size (€B)',
+                            color: colors.adas,
+                            font: { weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '€' + value.toFixed(1) + 'B';
+                            }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Penetration Rate (%)',
+                            color: colors.basicECU,
+                            font: { weight: 'bold' }
+                        },
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Year',
+                            font: { weight: 'bold' }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
