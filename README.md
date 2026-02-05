@@ -139,9 +139,7 @@ All models use **formulas** (not hardcoded values) with proper financial modelin
 ### Tools & Technologies
 - **Excel / Google Sheets**: Financial modeling, market analysis
 - **Tableau Public**: Interactive dashboards (market trends, pricing KPIs)
-- **HTML/CSS/JavaScript**: Web application frontend
-- **Chart.js / Plotly.js**: Data visualizations
-- **Python (openpyxl)**: Excel model generation & validation
+
 
 ### Design Principles
 - **Industrial-Premium Aesthetic**: Deep tech + business sophistication
