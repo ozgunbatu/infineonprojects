@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing KPI Dashboard | Infineon PMIC Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --infineon-red: #E30045;
+            --electric-cyan: #00D9FF;
+            --deep-navy: #0A0E27;
+            --bg-dark: #0F1419;
+            --text-primary: #E8EAF6;
+            --card-bg: #1A1F2E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            color: var(--infineon-red);
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-header p {
+            font-size: 1.2rem;
+            color: var(--electric-cyan);
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .kpi-card {
+            background: linear-gradient(135deg, var(--deep-navy) 0%, var(--card-bg) 100%);
+            padding: 1.8rem;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(227, 0, 69, 0.3);
+        }
+        
+        .kpi-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--electric-cyan);
+            margin-bottom: 0.5rem;
+        }
+        
+        .kpi-number.warning {
+            color: #FFA500;
+        }
+        
+        .kpi-number.success {
+            color: #00FF88;
+        }
+        
+        .kpi-label {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .kpi-sublabel {
+            font-size: 0.75rem;
+            color: rgba(232, 234, 246, 0.6);
+            margin-top: 0.3rem;
+        }
+        
+        .chart-container {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 217, 255, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.5rem;
+            color: var(--infineon-red);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        canvas {
+            max-height: 400px;
+        }
+        
+        .reference-line-info {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1>💰 Pricing Analytics Dashboard</h1>
+        <p>Price Realization & KPI Tracking</p>
+    </div>
+    
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-number warning">81%</div>
+            <div class="kpi-label">Price Realization</div>
+            <div class="kpi-sublabel">Current (Target: 85%)</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-number">€4.05</div>
+            <div class="kpi-label">Avg Pocket Price</div>
+            <div class="kpi-sublabel">TLF35x Current</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-number success">€4.50</div>
+            <div class="kpi-label">Target ASP</div>
+            <div class="kpi-sublabel">TLF37x Proposed</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-number">12.6M</div>
+            <div class="kpi-label">Units Sold</div>
+            <div class="kpi-sublabel">Q1-Q4 2024</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-number">€0.85</div>
+            <div class="kpi-label">Customer Savings</div>
+            <div class="kpi-sublabel">vs. Discrete Solution</div>
+        </div>
+    </div>
+    
+    <!-- Chart 1: Price Realization Trend -->
+    <div class="chart-container">
+        <div class="chart-title">Price Realization Trend (2024-2025)</div>
+        <canvas id="priceRealizationChart"></canvas>
+        <div class="reference-line-info">
+            🎯 Target: 85% price realization | Current improvement opportunity: +4% = €3M annual
+        </div>
+    </div>
+    
+    <!-- Chart 2 & 3: Two Column Layout -->
+    <div class="grid-2col">
+        <div class="chart-container">
+            <div class="chart-title">Pricing Waterfall Analysis</div>
+            <canvas id="waterfallChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-title">Volume vs. Discount Correlation</div>
+            <canvas id="volumeDiscountChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Chart 4: Product Comparison -->
+    <div class="chart-container">
+        <div class="chart-title">Product Line Price Comparison</div>
+        <canvas id="productComparisonChart"></canvas>
+    </div>
+    
+    <script>
+        Chart.defaults.color = '#E8EAF6';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        
+        const colors = {
+            infineon: 'rgba(227, 0, 69, 0.8)',
+            cyan: 'rgba(0, 217, 255, 0.8)',
+            orange: 'rgba(255, 165, 0, 0.8)',
+            green: 'rgba(0, 255, 136, 0.8)',
+            purple: 'rgba(138, 43, 226, 0.8)'
+        };
+        
+        // Chart 1: Price Realization Trend
+        const ctx1 = document.getElementById('priceRealizationChart').getContext('2d');
+        const quarters = ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024', 'Q1 2025', 'Q2 2025', 'Q3 2025'];
+        const realizationTLF35x = [81, 80, 79, 78, 78, null, null];
+        const realizationTLF37x = [null, null, null, null, null, 88, 90];
+        
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: quarters,
+                datasets: [
+                    {
+                        label: 'TLF35x (Current)',
+                        data: realizationTLF35x,
+                        borderColor: colors.orange,
+                        backgroundColor: 'rgba(255, 165, 0, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'TLF37x (Proposed)',
+                        data: realizationTLF37x,
+                        borderColor: colors.cyan,
+                        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15, font: { size: 12 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                            }
+                        }
+                    },
+                    annotation: {
+                        annotations: {
+                            target: {
+                                type: 'line',
+                                yMin: 85,
+                                yMax: 85,
+                                borderColor: colors.green,
+                                borderWidth: 2,
+                                borderDash: [10, 5],
+                                label: {
+                                    content: 'Target: 85%',
+                                    enabled: true,
+                                    position: 'end'
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        min: 70,
+                        max: 95,
+                        title: {
+                            display: true,
+                            text: 'Price Realization (%)',
+                            font: { size: 14, weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 2: Waterfall Chart (simulated with bar chart)
+        const ctx2 = document.getElementById('waterfallChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['List Price', 'Volume Disc.', 'Early Pay', 'Rebates', 'Special Disc.', 'Freight', 'Pocket Price'],
+                datasets: [{
+                    label: 'Price (€)',
+                    data: [5.00, 4.60, 4.50, 4.25, 4.10, 4.05, 4.05],
+                    backgroundColor: [
+                        colors.cyan,
+                        colors.orange,
+                        colors.orange,
+                        colors.orange,
+                        colors.infineon,
+                        colors.orange,
+                        colors.green
+                    ],
+                    borderColor: [
+                        colors.cyan,
+                        colors.orange,
+                        colors.orange,
+                        colors.orange,
+                        colors.infineon,
+                        colors.orange,
+                        colors.green
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '€' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Price (€)',
+                            font: { weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '€' + value.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 3: Volume vs Discount Scatter
+        const ctx3 = document.getElementById('volumeDiscountChart').getContext('2d');
+        new Chart(ctx3, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Customer Orders',
+                    data: [
+                        {x: 0.5, y: 22},
+                        {x: 1.2, y: 18},
+                        {x: 2.8, y: 15},
+                        {x: 3.5, y: 12},
+                        {x: 5.0, y: 10},
+                        {x: 8.5, y: 8}
+                    ],
+                    backgroundColor: colors.cyan,
+                    borderColor: colors.cyan,
+                    pointRadius: 8,
+                    pointHoverRadius: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Volume: ' + context.parsed.x + 'M units, Discount: ' + context.parsed.y + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Volume (Million Units)',
+                            font: { weight: 'bold' }
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Total Discount (%)',
+                            font: { weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Chart 4: Product Comparison
+        const ctx4 = document.getElementById('productComparisonChart').getContext('2d');
+        new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: ['Infineon TLF37x (Proposed)', 'TI TPS65xxx', 'Analog ADM1xxx', 'NXP FS65xxx', 'Discrete (2-chip)'],
+                datasets: [
+                    {
+                        label: 'List Price',
+                        data: [5.00, 4.60, 5.80, 4.90, 5.60],
+                        backgroundColor: 'rgba(176, 184, 197, 0.6)',
+                        borderColor: 'rgba(176, 184, 197, 1)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Net Price',
+                        data: [4.50, 4.19, 5.10, 4.41, 5.35],
+                        backgroundColor: [colors.infineon, colors.orange, colors.purple, colors.cyan, colors.orange],
+                        borderColor: [colors.infineon, colors.orange, colors.purple, colors.cyan, colors.orange],
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Price (€)',
+                            font: { weight: 'bold' }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return '€' + value.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
