@@ -200,7 +200,7 @@ All models use **formulas** (not hardcoded values) with proper financial modelin
 **Program**: Master in Business Management  
 **Location**: Munich, Germany  
 **Contact**: ozgunbatuhan@gmail.com  
-**LinkedIn**: [Coming Soon]
+**LinkedIn**: https://www.linkedin.com/in/ozgunbatuhandogan/
 
 **Purpose**: Application project for **Working Student - Product Management Power System IC** position at Infineon Technologies
 
@@ -219,7 +219,7 @@ All models use **formulas** (not hardcoded values) with proper financial modelin
 - [Market Sizing Model (Excel)](models/market_sizing_model.xlsx)
 - [Pricing Analysis Model (Excel)](models/pricing_analysis_model.xlsx)
 - [Business Case Model (Excel)](models/business_case_model.xlsx)
-- [PDF Summary (10 slides)](assets/Infineon_PMIC_Strategy_Summary.pdf) *(Coming Soon)*
+- [PDF Summary (10 slides)](assets/Infineon_PMIC_Strategy_Summary.pdf) 
 
 ### External Links
 - [Infineon OPTIREG™ Portfolio](https://www.infineon.com/cms/en/product/power/power-management-ics/automotive-pmics/)
@@ -246,8 +246,8 @@ All models use **formulas** (not hardcoded values) with proper financial modelin
 This project is part of my application to Infineon Technologies. If you have feedback, suggestions, or would like to discuss the analysis, please reach out:
 
 **Email**: ozgunbatuhan@gmail.com  
-**LinkedIn**: [Profile Link - Coming Soon]  
-**GitHub**: [Your GitHub Username]
+**LinkedIn**: https://www.linkedin.com/in/ozgunbatuhandogan/ 
+
 
 ---
 
