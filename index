@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batuhan Dogan | Strategic Portfolio</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #ffffff;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1f2e 50%, #0f1419 100%);
+            position: relative;
+        }
+        .hero-content {
+            text-align: center;
+            z-index: 1;
+            max-width: 900px;
+            padding: 40px;
+        }
+        .hero h1 {
+            font-size: 4.5em;
+            font-weight: 300;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #1c69d4 0%, #d4af37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+        .hero h2 {
+            font-size: 1.8em;
+            font-weight: 300;
+            color: #a8b5c0;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        .hero p {
+            font-size: 1.2em;
+            color: #6b7280;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 18px 45px;
+            background: linear-gradient(135deg, #1c69d4 0%, #0066b1 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(28, 105, 212, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(28, 105, 212, 0.5);
+        }
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(28, 105, 212, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav .logo {
+            font-size: 1.5em;
+            font-weight: 500;
+            background: linear-gradient(135deg, #1c69d4, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+        nav .nav-links a {
+            color: #4a5568;
+            text-decoration: none;
+            margin-left: 35px;
+            font-size: 0.95em;
+            transition: color 0.3s;
+            letter-spacing: 0.5px;
+        }
+        nav .nav-links a:hover {
+            color: #1c69d4;
+        }
+        section {
+            padding: 100px 40px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-size: 3em;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #1c69d4, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            color: #6b7280;
+            margin-bottom: 60px;
+            letter-spacing: 0.5px;
+        }
+        .case-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 35px;
+            margin-top: 50px;
+        }
+        .case-card {
+            background: linear-gradient(135deg, rgba(28, 105, 212, 0.03) 0%, rgba(255, 255, 255, 1) 100%);
+            border: 1px solid rgba(28, 105, 212, 0.15);
+            border-radius: 16px;
+            padding: 40px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #1c69d4, #0066b1);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        .case-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(28, 105, 212, 0.2);
+            border-color: rgba(28, 105, 212, 0.4);
+        }
+        .case-card:hover::before {
+            transform: scaleX(1);
+        }
+        .case-brand {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #1c69d4;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .case-card h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #1a202c;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+        .case-card p {
+            color: #4a5568;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+        .case-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .tag {
+            background: rgba(28, 105, 212, 0.1);
+            color: #1c69d4;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            border: 1px solid rgba(28, 105, 212, 0.2);
+        }
+        .case-link {
+            display: inline-block;
+            color: #1c69d4;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1em;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+        .case-link:hover {
+            color: #0066b1;
+            transform: translateX(5px);
+        }
+        .case-link::after {
+            content: ' →';
+        }
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 50px;
+        }
+        .skill-item {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(28, 105, 212, 0.1);
+            transition: all 0.3s;
+        }
+        .skill-item:hover {
+            background: rgba(28, 105, 212, 0.05);
+            border-color: rgba(28, 105, 212, 0.3);
+            transform: translateY(-5px);
+        }
+        .skill-item h4 {
+            color: #1c69d4;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .skill-item p {
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+        footer {
+            background: #f7fafc;
+            padding: 40px;
+            text-align: center;
+            color: #6b7280;
+            border-top: 1px solid rgba(28, 105, 212, 0.1);
+        }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5em; }
+            .hero h2 { font-size: 1.3em; }
+            .section-title { font-size: 2em; }
+            .case-grid { grid-template-columns: 1fr; }
+            nav .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">BD Portfolio</div>
+            <div class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#cases">Cases</a>
+                <a href="#blog">Blog</a>
+                <a href="#about">About</a>
+                <a href="mailto:ozgunbatuhan@gmail.com">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Batuhan Dogan</h1>
+            <h2>Business Management, M.A. | Strategic Analyst</h2>
+            <p>Data-driven strategist specializing in semiconductor markets, clean energy, and digital transformation. Building product strategies and market analyses for Infineon Technologies.</p>
+            <a href="#cases" class="cta-button">Explore Case Studies</a>
+        </div>
+    </section>
+
+    <section id="cases">
+        <div class="container">
+            <h2 class="section-title">Infineon Case Studies</h2>
+            <p class="section-subtitle">Strategic analyses demonstrating product management, market research, and digital GTM expertise</p>
+            
+            <div class="case-grid">
+                <div class="case-card">
+                    <div class="case-brand">INFINEON • AUTOMOTIVE PMIC</div>
+                    <h3>Power Management IC Product Strategy & Business Case</h3>
+                    <p>Market analysis identifying €185M NPV opportunity through OPTIREG™ TLF37x development for ADAS L2+ segment. Comprehensive pricing waterfall, competitive positioning, and 5-year financial projections.</p>
+                    <div class="case-tags">
+                        <span class="tag">Product Management</span>
+                        <span class="tag">Market Sizing</span>
+                        <span class="tag">Pricing Strategy</span>
+                        <span class="tag">NPV Analysis</span>
+                    </div>
+                    <a href="pmic/index.html" class="case-link">View Case Study</a>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-brand">INFINEON • CLEAN ENERGY</div>
+                    <h3>Solar & Energy Storage Ecosystem Go-to-Market</h3>
+                    <p>Digital go-to-market strategy for $12.4B power semiconductor opportunity in Solar PV and Energy Storage markets. Partner ecosystem mapping, content strategy, and project management framework.</p>
+                    <div class="case-tags">
+                        <span class="tag">Digital GTM</span>
+                        <span class="tag">Partner Management</span>
+                        <span class="tag">Market Research</span>
+                        <span class="tag">Project Management</span>
+                    </div>
+                    <a href="solar/index.html" class="case-link">View Case Study</a>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-brand">INFINEON • CONNECTIVITY</div>
+                    <h3>V2X & Mobility-as-a-Service Strategy Analysis</h3>
+                    <p>Strategic analysis of Vehicle-to-Everything and Mobility-as-a-Service markets. Semiconductor content opportunity assessment, competitive landscape mapping, and product positioning recommendations.</p>
+                    <div class="case-tags">
+                        <span class="tag">Market Analysis</span>
+                        <span class="tag">Competitive Intelligence</span>
+                        <span class="tag">Technology Trends</span>
+                        <span class="tag">Product Strategy</span>
+                    </div>
+                    <a href="connectivity/index.html" class="case-link">View Case Study</a>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-brand">INFINEON • SUPPLY CHAIN</div>
+                    <h3>Supply Chain Digitalization & IoT Analytics</h3>
+                    <p>Implementation roadmap for predictive analytics and IoT integration in semiconductor supply chain. Cost savings quantification, risk mitigation strategy, and digital twin framework.</p>
+                    <div class="case-tags">
+                        <span class="tag">Digital Transformation</span>
+                        <span class="tag">IoT Strategy</span>
+                        <span class="tag">Data Analytics</span>
+                        <span class="tag">Operations</span>
+                    </div>
+                    <a href="supplychain/index.html" class="case-link">View Case Study</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="blog" style="background: #f7fafc;">
+        <div class="container">
+            <h2 class="section-title">Insights & Analysis</h2>
+            <p class="section-subtitle">Thought leadership on semiconductor strategy, product management, and business intelligence</p>
+            
+            <div class="case-grid">
+                <div class="case-card">
+                    <div class="case-brand">MARKET TRENDS</div>
+                    <h3>Why SiC Adoption Lags Technical Promise</h3>
+                    <p>Analysis of Silicon Carbide market dynamics—examining supply constraints, cost parity challenges, and implications for Infineon's automotive and industrial positioning strategy.</p>
+                    <div class="case-tags">
+                        <span class="tag">Power Semiconductors</span>
+                        <span class="tag">Market Dynamics</span>
+                    </div>
+                    <a href="blog/sic.html" class="case-link">Read Article</a>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-brand">PRODUCT MANAGEMENT</div>
+                    <h3>From Market Sizing to Product Roadmap</h3>
+                    <p>Framework for translating TAM/SAM/SOM analysis into actionable product decisions. Real examples from automotive PMIC and solar inverter markets with Excel templates.</p>
+                    <div class="case-tags">
+                        <span class="tag">Product Strategy</span>
+                        <span class="tag">Frameworks</span>
+                    </div>
+                    <a href="blog/sizing.html" class="case-link">Read Article</a>
+                </div>
+
+                <div class="case-card">
+                    <div class="case-brand">PRICING STRATEGY</div>
+                    <h3>Pricing Waterfall Analysis: A Practical Guide</h3>
+                    <p>Step-by-step implementation of McKinsey pricing waterfall for B2B semiconductors. Excel templates, discount governance frameworks, and KPI dashboards included.</p>
+                    <div class="case-tags">
+                        <span class="tag">Pricing</span>
+                        <span class="tag">Analytics</span>
+                    </div>
+                    <a href="blog/pricing.html" class="case-link">Read Article</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div style="max-width: 900px; margin: 0 auto; text-align: center;">
+                <p style="font-size: 1.15em; color: #4a5568; line-height: 2; margin-bottom: 20px;">
+                    Currently pursuing M.A. in Business Management at Munich, Germany. Industrial Engineering background. 
+                    Specializing in product management, market analysis, and data-driven business strategy for semiconductor and clean energy sectors.
+                </p>
+                <p style="font-size: 1.15em; color: #4a5568; line-height: 2;">
+                    Seeking Working Student positions at Infineon Technologies in Product Management, Partner Management, Marketing Analytics, or Digital Go-to-Market.
+                </p>
+            </div>
+
+            <div class="skills-grid">
+                <div class="skill-item">
+                    <h4>Product Management</h4>
+                    <p>Market sizing, competitive analysis, roadmap development, feature prioritization, business cases</p>
+                </div>
+                <div class="skill-item">
+                    <h4>Business Analytics</h4>
+                    <p>Excel modeling, Tableau dashboards, pricing analysis, financial forecasting, KPI development</p>
+                </div>
+                <div class="skill-item">
+                    <h4>Digital Marketing</h4>
+                    <p>GTM strategy, content planning, partner management, channel optimization, social media</p>
+                </div>
+                <div class="skill-item">
+                    <h4>Project Management</h4>
+                    <p>Stakeholder management, RACI matrices, workshop facilitation, timeline planning</p>
+                </div>
+                <div class="skill-item">
+                    <h4>Technical Tools</h4>
+                    <p>Excel, PowerPoint, Tableau, Chart.js, HTML/CSS, Python basics, SQL</p>
+                </div>
+                <div class="skill-item">
+                    <h4>Languages</h4>
+                    <p>Turkish (Native), English (Fluent), German (Intermediate - B1)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Batuhan Dogan | Strategic Portfolio for Infineon Technologies</p>
+        <p style="margin-top: 10px;">Munich, Germany | ozgunbatuhan@gmail.com</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
